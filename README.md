@@ -2,9 +2,9 @@
 
 [![Tests](https://github.com/flshmodels/flash-bench/actions/workflows/test.yml/badge.svg)](https://github.com/flshmodels/flash-bench/actions/workflows/test.yml)
 
-Measure a Luau function, save its timings, and compare them after a code change. The JavaScript tool prints a report and checks for slowdowns.
+Time a Luau function before and after a change. A Node.js command reads the results and reports slowdowns.
 
-## Getting started
+## Setup
 
 Requires Node.js 22 or newer. There are no packages to install.
 
