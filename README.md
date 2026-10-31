@@ -2,9 +2,9 @@
 
 [![Tests](https://github.com/flshmodels/flash-bench/actions/workflows/test.yml/badge.svg)](https://github.com/flshmodels/flash-bench/actions/workflows/test.yml)
 
-A small Luau timing runner and a JavaScript report tool for comparing Roblox test runs. Use it to check whether a change made a particular operation slower or faster.
+Measure a Luau function, save its timings, and compare them after a code change. The JavaScript tool prints a report and checks for slowdowns.
 
-## Try the report tool
+## Getting started
 
 Requires Node.js 22 or newer. There are no packages to install.
 
@@ -14,7 +14,7 @@ node src/cli.mjs compare examples/before.json examples/after.json --max-regressi
 npm test
 ```
 
-The checked-in before/after files are **synthetic fixtures**, not measured Roblox performance claims. All commands run locally and exit when finished; nothing listens on a port.
+The example files contain **made-up timings** for trying the report tool. They are not Roblox performance results. The commands run locally and finish when the report is ready.
 
 ## Record a Roblox run
 
@@ -31,7 +31,7 @@ Callbacks must finish synchronously, without yielding. Errors stop the run. Warm
 | Input | Meaning |
 | --- | --- |
 | schemaVersion | Must be 1. |
-| environment | runtime, platform, context, workload: nonempty labels up to 120 characters, with no control characters. Use honest, specific values. |
+| environment | runtime, platform, context, workload: nonempty labels up to 120 characters, with no control characters. Record the version and machine used for the test. |
 | cases | 1–100 cases with unique names. |
 | name | Nonempty case label up to 120 characters. |
 | iterations | Callback calls per batch, integer 1–1,000,000. |
@@ -45,12 +45,14 @@ Comparisons require matching environment labels, case names and iteration counts
 
 Exit codes: **0** success/pass, **1** regression or budget failure, **2** invalid input or usage. Five samples meet the format minimum but provide little evidence about tail latency. Repeat runs under similar conditions and inspect noise before treating a difference as meaningful. Matching labels cannot prove equivalent hardware or conditions.
 
-## Design check
+## Related tools
 
-[nightcycle/roblox-benchmarks](https://github.com/nightcycle/roblox-benchmarks) is an existing benchmark suite with a runner and a results-processing stage. That separation is useful here too: Roblox collects samples, and an offline tool processes them. Flash Bench deliberately has a smaller scope and does not claim the coverage of that suite. No code was copied.
+[roblox-benchmarks](https://github.com/nightcycle/roblox-benchmarks) has a larger set of Luau benchmarks. Flash Bench uses a small callback runner and a separate report command for your own tests.
 
 Roblox's [Script Profiler](https://create.roblox.com/docs/studio/optimization/scriptprofiler) is the better starting point when you need to discover which scripts consume CPU time. Flash Bench measures a callback you have already chosen.
 
-Tests cover statistics, zero baselines, mismatched runs, malformed timings, budget checks and CLI exits. CI runs the Luau runner checks in Lune. Live Studio timing and performance validity still need a real test session.
+## Tests
+
+Tests cover statistics, zero baselines, mismatched runs, malformed timings, budget checks and command exit codes. GitHub Actions also runs the Luau runner in Lune and reads its output with the report tool. Live Studio timing has not been tested.
 
 MIT licensed. See [LICENSE](LICENSE).
