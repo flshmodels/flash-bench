@@ -1,0 +1,31 @@
+name: Tests
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  node:
+    strategy:
+      matrix:
+        node: ['22', '24']
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - run: npm test
+      - run: npm run demo
+  luau:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Lune on the CI runner
+        run: |
+          curl --fail --location --retry 3 -o lune.zip https://github.com/lune-org/lune/releases/download/v0.11.1/lune-0.11.1-linux-x86_64.zip
+          unzip -q lune.zip -d tools
+          chmod +x tools/lune
+      - run: ./tools/lune run tests/runner
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node src/cli.mjs summary build/actual.json
