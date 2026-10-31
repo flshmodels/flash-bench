@@ -14,7 +14,13 @@ export function validateRun(run) {
     if (!exact(entry, ['name', 'iterations', 'samplesMs']) || !label(entry.name) || names.has(entry.name)) fail('case names must be unique nonempty labels');
     names.add(entry.name);
     if (!Number.isInteger(entry.iterations) || entry.iterations < 1 || entry.iterations > 1_000_000) fail('iterations must be in 1..1000000');
-    if (!Array.isArray(entry.samplesMs) || entry.samplesMs.length < 5 || entry.samplesMs.length > 1000 || !entry.samplesMs.every(n => typeof n === 'number' && Number.isFinite(n) && n >= 0 && n <= 3_600_000)) fail('expected 5..1000 finite batch timings in milliseconds (0..3600000)');
+    if (!Array.isArray(entry.samplesMs)
+        || entry.samplesMs.length < 5
+        || entry.samplesMs.length > 1000
+        || !entry.samplesMs.every(n => typeof n === 'number'
+        && Number.isFinite(n)
+        && n >= 0
+        && n <= 3_600_000)) fail('expected 5..1000 finite batch timings in milliseconds (0..3600000)');
   }
   return run;
 }
@@ -37,7 +43,11 @@ export function stats(entry) {
 
 export function compare(before, after, maxRegression = 10, budgetMs = null) {
   validateRun(before); validateRun(after);
-  if (!Number.isFinite(maxRegression) || maxRegression < 0 || (budgetMs !== null && (!Number.isFinite(budgetMs) || budgetMs <= 0))) throw new Error('thresholds must be finite: regression >= 0, budget > 0');
+  if (!Number.isFinite(maxRegression)
+      || maxRegression < 0
+      || (budgetMs !== null
+      && (!Number.isFinite(budgetMs)
+      || budgetMs <= 0))) throw new Error('thresholds must be finite: regression >= 0, budget > 0');
   for (const key of Object.keys(before.environment)) {
     if (before.environment[key] !== after.environment[key]) throw new Error(`environment mismatch: ${key}`);
   }
@@ -58,7 +68,15 @@ export function compare(before, after, maxRegression = 10, budgetMs = null) {
 const cell = text => String(text).replaceAll('\\', '\\\\').replaceAll('|', '\\|').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('`', '&#96;');
 export function markdown(run) {
   validateRun(run);
-  const lines = ['# Flash Bench report', '', ...Object.entries(run.environment).map(([key, value]) => `- ${key}: ${cell(value)}`), '', 'All timings below are milliseconds per callback invocation, derived from batch timings.', '', '| Case | Samples | Median | P95 | Min | Max |', '| --- | ---: | ---: | ---: | ---: | ---: |'];
+  const lines = [
+    '# Flash Bench report', '',
+    ...Object.entries(run.environment).map(([key, value]) => `- ${key}: ${cell(value)}`),
+    '',
+    'All timings below are milliseconds per callback invocation, derived from batch timings.',
+    '',
+    '| Case | Samples | Median | P95 | Min | Max |',
+    '| --- | ---: | ---: | ---: | ---: | ---: |',
+  ];
   for (const entry of run.cases) {
     const s = stats(entry);
     lines.push(`| ${cell(entry.name)} | ${s.count} | ${s.medianMs.toFixed(6)} | ${s.p95Ms.toFixed(6)} | ${s.minMs.toFixed(6)} | ${s.maxMs.toFixed(6)} |`);
