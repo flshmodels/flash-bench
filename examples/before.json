@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "environment": {
+    "runtime": "synthetic fixture",
+    "platform": "not a real device measurement",
+    "context": "server",
+    "workload": "sum-example-v1"
+  },
+  "cases": [
+    {
+      "name": "sum-100",
+      "iterations": 100,
+      "samplesMs": [
+        10,
+        12,
+        11,
+        13,
+        10,
+        14,
+        11,
+        12,
+        10,
+        13
+      ]
+    }
+  ]
+}
